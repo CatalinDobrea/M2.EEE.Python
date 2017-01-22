@@ -32,7 +32,7 @@ class Craps:
         a = AboveMinimum(amount)
         r = RollTheDice(bet)
         qualify = [i * j for i, j in zip(a, r)]
-        if sum(r) == 0:
+        if sum(qualify) == 0:
             playergains = [0 for i in amount]
             casinogain = sum(amount)
         else:
