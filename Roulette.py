@@ -30,12 +30,6 @@ class Roulette:
 
         y = abovemin(amount)
         z = spinthewheel(bets)
-        qualify = [i*j for i, j in zip(y, z)]
-        if qualify.count(1) == 0:
-            casinogain = sum(amount)
-            playergains = [0 for i in amount]
-            return [casinogain, playergains]
-        else:
-            playergains = [i*j for i, j in zip(amount, qualify)]
-            casinogain = sum(amount) - sum(playergains)
-            return [casinogain, [i*30 for i in playergains]]
+        playergains = [i*j*k for i, j in zip(amount, y, z)]
+        casinogain = sum(amount) - sum(playergains)
+        return [casinogain, [i*30 for i in playergains]]
