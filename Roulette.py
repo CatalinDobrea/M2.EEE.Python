@@ -30,6 +30,6 @@ class Roulette:
 
         y = abovemin(amount)
         z = spinthewheel(bets)
-        playergains = [i*j*k for i, j in zip(amount, y, z)]
+        playergains = [i*j*k for i, j, k in zip(amount, y, z)]
         casinogain = sum(amount) - sum(playergains)
         return [casinogain, [i*30 for i in playergains]]
