@@ -11,7 +11,7 @@ MinBet = [0, 25, 50]
 
 casinogain = 0
 playedsum = 0
-for i in range(10000):
+for i in range(50000):
     players = random.randint(0,6)
     MinBetX = random.choice(MinBet)
     amount = random.sample(range(MinBetX,100),players)
@@ -20,8 +20,5 @@ for i in range(10000):
     table1 = Craps.Craps(MinBetX)
     casinogain += table1.SimulateGame(bet, amount)[0]
     playedsum +=k
-print(casinogain)
-print(playedsum)
-print(casinogain/playedsum)
-
-
+casinoprofitshare = casinogain / playedsum
+print(casinoprofitshare)
