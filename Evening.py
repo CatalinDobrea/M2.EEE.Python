@@ -15,23 +15,26 @@ class Customer(object):
             self.budget = random.randint(200,500)
             self.bet = random.randint(0,int(self.budget))
 
-
-
-def CustomerType(returning, bachelor, total):
+def CustomerType(returning, bachelor, total, startcash):
     customers = []
     ret = int(total * returning / 100)
     bch = int(total * bachelor / 100)
     onet = total - ret -bch
     for i in range(ret):
         customers.append(Customer('Returning'))
-    for i in range(bch):
-        customers.append(Customer('Bachelor'))
     for i in range(onet):
         customers.append(Customer('Onetime'))
+    for i in range(bch):
+        customers.append(Customer('Bachelor'))
+    for i in range(100-bch, total):
+        customers[i].budget += startcash
     return customers
 
-cost = CustomerType(50, 10, 100)
-print(cost[2].budget)
+customers = list(CustomerType(50, 10, 100, 200))
+for i in customers:
+    print(i.budget)
+
+
 
 
 
