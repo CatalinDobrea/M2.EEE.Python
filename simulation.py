@@ -1,3 +1,4 @@
+#test code for the roulette functioning and random gains
 import Roulette
 import random
 import Craps

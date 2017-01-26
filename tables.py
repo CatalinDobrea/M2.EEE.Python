@@ -2,7 +2,7 @@ import random
 
 class Customer:
     def __init__(self):
-
+        self.table = random.randint(1,10)
         def drinks(self):
             if self.wealth > 60:
                 self.drink = random.randint(1, 2) * 20
@@ -45,11 +45,10 @@ for i in range(1,20):
 print(customers)
 
 
-class Table(object):
-    def __init__(self, customers, croupier):
-        self.customers = customers
-        self.croupier = croupier
 
+class Table(object):
+    def __init__(self, customers):
+        self.customers = customers
 
 class Roulette(Table):
 
@@ -82,3 +81,15 @@ class Roulette(Table):
         playergains = [i*j*k for i, j, k in zip(amount, y, z)]
         casinogain = sum(amount) - sum(playergains)
         return [casinogain, [i*30 for i in playergains]]
+
+
+
+
+
+
+
+playtable = [[] for i in range (10)]
+for i in range(10):
+    for y in range(len(customers)):
+        if customers.table[y]==i:
+            playtable[i].append(customers[y])
