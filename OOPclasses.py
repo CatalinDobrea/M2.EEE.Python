@@ -91,9 +91,50 @@ class Roulette(Table):
             CasinoGain = CasinoGain * 0.95
         return [CasinoGain, PlayerGains]
 
+class Craps(Table):
+    def SimulateGame(self):
+        amounts = self.amounts
+        bets = [random.randint(2,12) for i in amounts ]
 
-x = Roulette(12)
-print(Roulette.SimulateGame(Table(12)))
+        def AboveMinimum(amounts):
+            minbet = random.choice([0, 25, 50])
+            output = []
+            for item in amounts:
+                output.append(bool(item >= minbet))
+            return output
+
+        def RollTheDice(bets):
+            dice = random.randint(1, 6) + random.randint(1, 6)
+            output = []
+            for item in bets:
+                output.append(bool(item == dice))
+            print(" Throwing the dice")
+            print(" The sum of the upper faces  ", dice)
+            if sum(output) > 0:
+                print(" There are ", sum(output), " winner(s)")
+            else:
+                print("No player won")
+            return output
+
+        a = AboveMinimum(amounts)
+        r = RollTheDice(bets)
+        probas = [0.0278, 0.0556, 0.0833, 0.1111, 0.1389, 0.1667, 0.1389, 0.1111, 0.0833, 0.0556, 0.0278]
+        Coeff = [0.9 / j for j in probas]
+        qualify = [i * j for i, j in zip(a, r)]
+        playergains = [i * Coeff[k-2] * j for i, k, j in zip(amounts, bets, qualify)]
+        casinogain = sum(amounts) - sum(playergains)
+        return [casinogain, playergains]
+
+
+
+
+
+
+# x = Roulette(12)
+# print(Roulette.SimulateGame(Table(12)))
+
+y = Craps(5)
+print(Craps.SimulateGame(Table(5)))
 
 
 
