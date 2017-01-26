@@ -33,6 +33,7 @@ def CustomerType(returning, bachelor, total, startcash):
     return customers
 
 customers = list(CustomerType(50, 10, 100, 200))
+print(dir(customers))
 #for i in customers:
 #    print(i.ID)
 
@@ -47,16 +48,17 @@ print(len(customers))
 
 
 
-def repartition(tbnum):
-    tables = [[] for f in range(tbnum)]
-    aux = customers
-    for i in range(tbnum):
-        if aux != []:
-            tables[i] = random.sample(aux, random.randint(1, len(aux)))
-            aux = [x for x in aux if x not in tables[i]]
-    return tables
-
-print(repartition(20))
-
-
-vafli  = random.sample(customers,random.randint(1,len(customers)))
+# def repartition(tbnum):
+#     tables = [[] for f in range(tbnum)]
+#     aux = customers
+#     for i in range(tbnum):
+#         if aux != []:
+#             tables[i] = random.sample(aux, random.randint(1, len(aux)))
+#             aux = [x for x in aux if x not in tables[i]]
+#     return tables
+#
+# print(repartition(20))
+#
+#
+# for i in range(20):
+#     print(len(repartition(20)[i]))
