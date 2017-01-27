@@ -17,30 +17,6 @@ BachelorFree = 200
 # played on that particular table, and the minimum amount that can be betted on that particular table). The inputs of this
 # function is the actual number of Roullette and Craps tables.
 
-
-
-
-
-class Customer(object):
-    def __init__(self, typeC, ID):
-        self.typeC = typeC
-        self.ID = ID
-        self.table = random.choice(CasinoTables)
-        if self.typeC == "Returning":
-            self.budget = random.randint(100, 300)
-            self.bet = self.table[2]
-        elif self.typeC == "New":
-            self.budget = random.randint(200, 300)
-            self.bet = random.randint(0, int((self.budget) / 3))
-        else:
-            self.budget = random.randint(200, 500) + BachelorFree
-            self.bet = random.randint(0, int(self.budget))
-    def setbudget(self, budget):
-        self.budget += budget
-# Te following step is to create the customers, and only information that we hold about them is their type, so basically
-# we create a list with the number of all the 3 types of costumers, and then using the Customer object we will create a
-# list of objects that will have the information about all the Customers
-
 def CasinoTablesGen(nbR, nbC):
     tables = []
     for i in range(nbR):
@@ -53,29 +29,49 @@ def CasinoTablesGen(nbR, nbC):
 CasinoTables = CasinoTablesGen(nbRoulette,nbCraps)
 
 
-def CustomerTypes(total, returning, bachelor):
-    customers = []
-    ret = int(total * (returning / 100))
-    bch = int(total * (bachelor / 100))
-    new = total - (ret + bch)
-    for i in range(ret):
-        customers.append(Customer('Returning', i))
-    for i in range(new):
-        customers.append(Customer('New', i + ret))
-    for i in range(bch):
-        customers.append(Customer('Bachelor', i + new + ret))
-    return customers
+class Customer(object):
+    def __init__(self, typeC, ID):
+        self.typeC = typeC
+        self.ID = ID
+        self.table = random.choice(CasinoTables)
+        if self.typeC == "Returning":
+            self.budget = random.randint(100, 300)
+            self.bet = self.table[2]
+            if self.budget<self.bet:
+                self.bet = 0
+        elif self.typeC == "New":
+            self.budget = random.randint(200, 300)
+            self.bet = random.randint(0, int((self.budget) / 3))
+        else:
+            self.budget = random.randint(200, 500) + BachelorFree
+            self.bet = random.randint(0, int(self.budget))
 
-Customers = CustomerTypes(nbCustomers, prcReturning, prcBachelor)
-initamounts = []
-for i in range(len(Customers)):
-    initamounts.append(Customers[i].budget)
+    def setBudget(self, budget):
+        self.budget += + budget
+
+# Te following step is to create the customers, and only information that we hold about them is their type, so basically
+# we create a list with the number of all the 3 types of costumers, and then using the Customer object we will create a
+# list of objects that will have the information about all the Customers
+
+def CustomerTypes(total, returning, bachelor):
+        customers=[]
+        ret = int(total * (returning / 100))
+        bch = int(total * (bachelor / 100))
+        new = total - (ret + bch)
+        for i in range(ret):
+            customers.append(Customer('Returning', i))
+        for i in range(new):
+            customers.append(Customer('New', i + ret))
+        for i in range(bch):
+            customers.append(Customer('Bachelor', i + new + ret))
+        return customers
 
 # Then we actually make that list given the total number of costumers, the percentage of returning customers and the percentage
 # of Bachelors
 Customers = CustomerTypes(nbCustomers, prcReturning, prcBachelor)
-
-
+initwealth=[]
+for i in range(len(Customers)):
+    initwealth.append(Customers[i].budget)
 
 # Then knowing that for the first round each customer has already defined the table at which he will play, we can create
 # another list with with exact same information, but now sorted by table, so bassically the first term of that list will
@@ -140,7 +136,7 @@ class Table(object):
                 CasinoGain = CasinoGain * 0.95
 
             for i in range(len(self.Players)):
-                self.Players[i].setbudget(PlayerGains[i] - Amounts[i])
+                self.Players[i].setBudget(PlayerGains[i] - Amounts[i])
 
             return [CasinoGain, PlayerGains,Amounts,Bets]
 
@@ -177,18 +173,25 @@ class Table(object):
 
             PlayerGains = [i * Coeff[k-2] * j * l for i, k, j, l in zip(Amounts, Bets, A, R)]
             CasinoGain = sum(Amounts) - sum(PlayerGains)
+
             for i in range(len(self.Players)):
-                self.Players[i].setbudget(PlayerGains[i] - Amounts[i])
+                self.Players[i].setBudget(PlayerGains[i] - Amounts[i])
+
             return [CasinoGain, PlayerGains,Amounts,Bets]
 
-for i in range(nbRoulette + nbCraps):
-    Table(i).SimulateGame()
 
-finamounts = []
+for i in range(len(CasinoTables)):
+    print(Table(i).SimulateGame())
+
+finwealth=[]
 for i in range(len(Customers)):
-    finamounts.append(Customers[i].budget)
-
-print(zip(initamounts, finamounts))
+    finwealth.append(Customers[i].budget)
 
 
+print(initwealth)
+print(finwealth)
 
+# print(Table.SimulateGame(Table(12)))
+
+# for i in range(len(Table(12).Players)):
+#     print(Table(12).Players[i].budget)

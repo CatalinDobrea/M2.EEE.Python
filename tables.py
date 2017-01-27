@@ -1,95 +1,89 @@
 import random
 
-class Customer:
+class customer(object):
+    def __init__(self, custID):
+        self.custID = custID
+    def sitdown(self, tablelist):
+        return random.choice(tablelist)
+
+class returningcustomer(customer):
+    def __init__(self, bet=0):
+        self.budget = random.randint(100, 300)
+        self.bet = bet
+    def setbet(self, table):
+        if self.budget >= table.minimumbet:
+            self.bet = table.minimumbet
+        else:
+            self.bet=0
+
+class onetimecustomer(customer):
     def __init__(self):
-        self.table = random.randint(1,10)
-        def drinks(self):
-            if self.wealth > 60:
-                self.drink = random.randint(1, 2) * 20
-                self.tips = random.randint(0, 20)
-                self.wealth -= self.drink + self.tips
-                return True
-            else:
-                self.drink = 0
-                self.tips = 0
-                return False
+        self.budget = random.randint(200, 300)
+        self.bet = random.randint(0, self.budget)
 
-        def playat(self, tbnum, rounds):
-            self.tblplay = [random.randint(1,tbnum) for i in range(rounds)]
+class bachelorcustomer(customer):
+    def __init__(self):
+        self.budget = random.randint(200, 500)
+        self.bet = random.randint(0, self.budget / 3)
+    def additionalcash(self, cash):
+        self.budget += cash
 
-
-
-class Returning(Customer):
-    def rich(self):
-        self.wealth = random.randint(100, 300)
-        self.bet = 0
-        return False
-
-
-class OneTime(Customer):
-    def rich(self):
-        self.wealth = random.randint(200, 300)
-        self.bet = random.randint(0, (self.wealth / 3))
-        return False
-
-
-class Bachelor(Customer):
-    def rich(self):
-        self.wealth = random.randint(200, 500) + 0
-        self.bet = random.randint(0, self.wealth)
-        return False
-
-customers = []
-for i in range(1,20):
-    customers.append(Returning())
-print(customers)
-
-
-
-class Table(object):
-    def __init__(self, customers):
-        self.customers = customers
-
-class Roulette(Table):
-
-    def minimumbet(self):
-        self.minimumbet = random.randint([0, 50, 100])
-
-    def simulategame(self, bets, amount):
-
-        def abovemin(self):
-            above = []
-            for item in self.customers:
-                above.append(bool(self.customers.bet[item] >= self.minimumbet))
-            return above
-
-        def spinthewheel(bets):
-            occ = random.randint(0, 36)
-            print('Spinning the wheel...')
-            print('The Ball lands on...', occ)
-            correcte = []
-            for item in bets:
-                correcte.append(bool(item == occ))
-            if correcte.count(True) == 0:
-                print("No winners this round")
-            else:
-                print("There are", sum(correcte), "correct bets")
-            return correcte
-
-        y = abovemin(amount)
-        z = spinthewheel(bets)
-        playergains = [i*j*k for i, j, k in zip(amount, y, z)]
-        casinogain = sum(amount) - sum(playergains)
-        return [casinogain, [i*30 for i in playergains]]
+class table(object):
+    def __init__(self, tableID):
+        self.tableID = tableID
 
 
 
 
 
 
+class Roulette(table):
+    def __init__(self):
+        self.minimum = random.choice(50, 100, 200)
 
-playtable = [[] for i in range (10)]
-for i in range(10):
-    for y in range(len(customers)):
-        if customers.table[y]==i:
-            playtable[i].append(customers[y])
+    def SimulateGame(self, amounts):
+        A=[]
+        bets = [random.randint(0,36) for i in amounts]
+        for item in amounts:
+            A.append(bool(item >= self.minimum))
+        winnumb = random.randint(0, 36)
+        rightnumber= []
+        for item in bets:
+            rightnumber.append(bool(item == winnumb))
+        print(" Spinning the wheel...")
+        print(" Ball lands on " + str(winnumb))
+        if sum(rightnumber) > 0:
+            print(" There are " + str(sum(rightnumber)) + " correct bet(s)")
+        else:
+            print("No winners this round")
+
+        PlayerGains = [i * j * k * 30 for i, j, k in zip(amounts, A, rightnumber)]
+        CasinoGain = sum(amounts) - sum(PlayerGains)
+        return [CasinoGain, PlayerGains]
+
+class Craps(table):
+    def __init__(self):
+        self.minimum = random.choice(0, 25, 50)
+
+    def SimulateGame(self, amounts):
+        A = []
+        bets = [random.randint(2, 12) for i in amounts]
+        dice = random.randint(1, 6) + random.randint(1, 6)
+        rightbet = []
+        for item in bets:
+            rightbet.append(bool(item == dice))
+        print(" Throwing the dice")
+        print(" The sum of the upper faces  ", dice)
+        if sum(rightbet) > 0:
+            print(" There are ", sum(rightbet), " winner(s)")
+        else:
+            print("No player won")
+
+
+        Probs = list([i / 36 for i in range(1, 6)]) + [6 / 36] + list(reversed([i / 36 for i in range(1, 6)]))
+        Coeff = [0.9 / i for i in Probs]
+
+        PlayerGains = [i * Coeff[k - 2] * j * l for i, k, j, l in zip(amounts, bets, A, rightbet)]
+        CasinoGain = sum(amounts) - sum(PlayerGains)
+
+        return [CasinoGain, PlayerGains]
