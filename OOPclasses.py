@@ -50,7 +50,7 @@ for i in range(1, (nbRoulette+nbCraps)+1):
         if Customers[j].table == i:
             tableplayers.append(Customers[j])
     listoftables.append(tableplayers)
-
+print(tableplayers)
 
 class Table(object):
     def __init__(self, number):
@@ -59,85 +59,90 @@ class Table(object):
         self.amounts = []
         for i in range(len(self.players)):
             self.amounts.append(self.players[i].bet)
-class Roulette(Table):
-
+        if self.number <= nbRoulette:
+            self.typet = 'Roulette'
+        elif self.number > nbRoulette:
+            self.typet = 'Craps'
+        if self.typet == 'Craps':
+            self.minbet = random.choice([0, 25, 50])
+        elif self.typet == 'Roulette':
+            self.minbet = random.choice([50, 100, 200])
     def SimulateGame(self):
-        amounts = self.amounts
-        bets = [random.randint(0,36) for i in amounts]
+        if self.typet == 'Roulette':
 
-        def AboveMinimum(amounts):
-            MinimumBet = random.choice([50, 100, 200])
-            output = []
-            for item in amounts:
-                output.append(bool(item >= MinimumBet))
-            return output
+            amounts = self.amounts
+            bets = [random.randint(0,36) for i in amounts]
+            MinimumBet = self.minbet
 
-        def SpinTheWheel(bets):
-            winnumb = random.randint(0, 36)
-            output = []
-            for item in bets:
-                output.append(bool(item == winnumb))
-            print(" Spinning the wheel...")
-            print(" Ball lands on " + str(winnumb))
-            if sum(output) > 0:
-                print(" There are " + str(sum(output)) + " correct bet(s)")
-            else:
-                print("No winners this round")
-            return (output)
+            def AboveMinimum(amounts):
+                output = []
+                for item in amounts:
+                    output.append(bool(item >= MinimumBet))
+                return output
 
-        PlayerGains = [i * j * k * 30 for i, j, k in zip(amounts, AboveMinimum(amounts), SpinTheWheel(bets))]
-        CasinoGain = sum(amounts) - sum(PlayerGains)
-        if CasinoGain > 0:
-            CasinoGain = CasinoGain * 0.95
-        return [CasinoGain, PlayerGains]
+            def SpinTheWheel(bets):
+                winnumb = random.randint(0, 36)
+                output = []
+                for item in bets:
+                    output.append(bool(item == winnumb))
+                print(" Spinning the wheel...")
+                print(" Ball lands on " + str(winnumb))
+                if sum(output) > 0:
+                    print(" There are " + str(sum(output)) + " correct bet(s)")
+                else:
+                    print("No winners this round")
+                return (output)
 
-class Craps(Table):
-    def SimulateGame(self):
-        amounts = self.amounts
-        bets = [random.randint(2,12) for i in amounts ]
+            PlayerGains = [i * j * k * 30 for i, j, k in zip(amounts, AboveMinimum(amounts), SpinTheWheel(bets))]
+            CasinoGain = sum(amounts) - sum(PlayerGains)
+            if CasinoGain > 0:
+                CasinoGain = CasinoGain * 0.95
+            return [CasinoGain, PlayerGains]
+        elif self.typet == 'Craps':
+            amounts = self.amounts
+            bets = [random.randint(2, 12) for i in amounts]
+            minbet = self.minbet
 
-        def AboveMinimum(amounts):
-            minbet = random.choice([0, 25, 50])
-            output = []
-            for item in amounts:
-                output.append(bool(item >= minbet))
-            return output
+            def AboveMinimum(amounts):
+                output = []
+                for item in amounts:
+                    output.append(bool(item >= minbet))
+                return output
 
-        def RollTheDice(bets):
-            dice = random.randint(1, 6) + random.randint(1, 6)
-            output = []
-            for item in bets:
-                output.append(bool(item == dice))
-            print(" Throwing the dice")
-            print(" The sum of the upper faces  ", dice)
-            if sum(output) > 0:
-                print(" There are ", sum(output), " winner(s)")
-            else:
-                print("No player won")
-            return output
+            def RollTheDice(bets):
+                dice = random.randint(1, 6) + random.randint(1, 6)
+                output = []
+                for item in bets:
+                    output.append(bool(item == dice))
+                print(" Throwing the dice")
+                print(" The sum of the upper faces  ", dice)
+                if sum(output) > 0:
+                    print(" There are ", sum(output), " winner(s)")
+                else:
+                    print("No player won")
+                return output
 
-        a = AboveMinimum(amounts)
-        r = RollTheDice(bets)
-        probas = [0.0278, 0.0556, 0.0833, 0.1111, 0.1389, 0.1667, 0.1389, 0.1111, 0.0833, 0.0556, 0.0278]
-        Coeff = [0.9 / j for j in probas]
-        qualify = [i * j for i, j in zip(a, r)]
-        playergains = [i * Coeff[k-2] * j for i, k, j in zip(amounts, bets, qualify)]
-        casinogain = sum(amounts) - sum(playergains)
-        return [casinogain, playergains]
-
-
+            a = AboveMinimum(amounts)
+            r = RollTheDice(bets)
+            probas = [0.0278, 0.0556, 0.0833, 0.1111, 0.1389, 0.1667, 0.1389, 0.1111, 0.0833, 0.0556, 0.0278]
+            Coeff = [0.9 / j for j in probas]
+            qualify = [i * j for i, j in zip(a, r)]
+            playergains = [i * Coeff[k - 2] * j for i, k, j in zip(amounts, bets, qualify)]
+            casinogain = sum(amounts) - sum(playergains)
+            return [casinogain, playergains]
 
 
 
+def tabletype(nbRoulette, nbCraps):
+    tables = []
+    for i in range(nbRoulette):
+        tables.append(Table(i))
+    for i in range(nbRoulette, nbRoulette+nbCraps):
+        tables.append(Table(i))
+    return tables
+print(tabletype(nbRoulette, nbCraps))
 
-# x = Roulette(12)
-# print(Roulette.SimulateGame(Table(12)))
-
-y = Craps(5)
-print(Craps.SimulateGame(Table(5)))
-
-
-
+print(Table.SimulateGame(Table(12)))
 
 
 

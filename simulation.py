@@ -12,7 +12,7 @@ MinBet = [0, 25, 50]
 
 casinogain = 0
 playedsum = 0
-for i in range(50000):
+for i in range(40000):
     players = random.randint(0,6)
     MinBetX = random.choice(MinBet)
     amount = random.sample(range(MinBetX,100),players)
