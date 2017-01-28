@@ -82,7 +82,7 @@ class Croupier(Employee):
         self.croupierID = croupierID
     def commission(self, partofwin):
         if partofwin > 0:
-            self.partofwin += int(partofwin) * 0.05
+            self.partofwin += float(partofwin) * 0.05
 
 class Barman(Employee):
     def __init__(self, wage=0, alcsales =0):
