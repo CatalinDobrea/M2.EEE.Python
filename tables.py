@@ -210,7 +210,8 @@ for i in range(len(lostables)):
 
     playergains = auxiliary[1]
     casinogain = auxiliary[0]
-    jugadores[i][j].updatewealth(playergains[j])
+    if jugadores[i][j] != []:
+        jugadores[i][j].updatewealth(playergains[j])
 
 
 
