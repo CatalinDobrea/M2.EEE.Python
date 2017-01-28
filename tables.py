@@ -76,9 +76,10 @@ class Employee(object):
         self.wage = wage
 
 class Croupier(Employee):
-    def __init__(self, wage=0, partofwin=0):
+    def __init__(self, croupierID, wage=0, partofwin=0):
         super(Croupier, self).__init__(wage)
         self.partofwin = partofwin
+        self.croupierID = croupierID
     def commission(self, partofwin):
         if partofwin > 0:
             self.partofwin += int(partofwin) * 0.05
@@ -89,6 +90,7 @@ class Barman(Employee):
         self.alcsales = alcsales
     def barmantips(self):
         self.alcsales +=random.randint(0,20)
+
 class table(object):
     def __init__(self, tableID, minimumbet=0):
         self.tableID = tableID
