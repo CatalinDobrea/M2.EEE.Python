@@ -95,12 +95,11 @@ class table(object):
     def __init__(self, tableID, minimumbet=0):
         self.tableID = tableID
         self.minimumbet = minimumbet
-        self.croupier = Croupier(tableID)
+
 class Craps(table):
-    def __init__(self, tableID, croupier=0,  minimumbet =0):
+    def __init__(self, tableID, minimumbet =0):
         super(Craps, self).__init__(tableID)
         super(Craps,self).__init__(minimumbet)
-        super(Craps,self).__init__(croupier)
         self.minimumbet = random.choice([0, 25, 50])
     def SimulateGame(self, amounts):
         A = []
@@ -111,13 +110,6 @@ class Craps(table):
         rightbet = []
         for item in bets:
             rightbet.append(bool(item == dice))
-        print(" Throwing the dice")
-        print(" The sum of the upper faces  ", dice)
-        if sum(rightbet) > 0:
-            print(" There are ", sum(rightbet), " winner(s)")
-        else:
-            print("No player won")
-
 
         Probs = list([i / 36 for i in range(1, 6)]) + [6 / 36] + list(reversed([i / 36 for i in range(1, 6)]))
         Coeff = [0.9 / i for i in Probs]
@@ -129,12 +121,10 @@ class Craps(table):
 
 class Roulette(table):
 
-    def __init__(self, croupier=0, tableID=0, minimumbet=0):
+    def __init__(self, tableID=0, minimumbet=0):
         super(Roulette,self).__init__(tableID)
         super(Roulette,self).__init__(minimumbet)
-        super(Roulette, self).__init__(croupier)
         self.minimumbet = random.choice([50, 100, 200])
-
     def SimulateGame(self, amounts):
         A=[]
         bets = [random.randint(0,36) for i in amounts]
@@ -144,12 +134,6 @@ class Roulette(table):
         rightnumber= []
         for item in bets:
             rightnumber.append(bool(item == winnumb))
-        print(" Spinning the wheel...")
-        print(" Ball lands on " + str(winnumb))
-        if sum(rightnumber) > 0:
-            print(" There are " + str(sum(rightnumber)) + " correct bet(s)")
-        else:
-            print("No winners this round")
 
         PlayerGains = [i * j * k * 30 for i, j, k in zip(amounts, A, rightnumber)]
         CasinoGain = sum(amounts) - sum(PlayerGains)
@@ -168,12 +152,19 @@ for i in range(int(sharereturningcustomers * nbcustomers +1), int(sharereturning
 for i in range(int(sharereturningcustomers * nbcustomers + sharebachelorcustomers * nbcustomers +1), int(nbcustomers)):
     loscostumers.append((onetimecustomer(i+1)))
 
+
+
 #Create the tables
 lostables = []
 for i in range(nbroulettetables):
     lostables.append(Roulette(i+1))
 for i in range(nbcrapstables):
     lostables.append(Craps(i+nbroulettetables+1))
+
+loscroupiers = []
+for i in  range(nbroulettetables+nbcrapstables):
+    loscroupiers.append(Croupier(i+1))
+
 
 
 ####### Here should the function for one round start
@@ -204,18 +195,15 @@ for i in range(len(lostables)-1):
     amounts = []
     for j in range(len(jugadores[i])-1):
         amounts.append(jugadores[i][j].bet)
-        auxiliary=lostables[i].SimulateGame(amounts)
+    auxiliary=lostables[i].SimulateGame(amounts)
+    for j in range(len(jugadores[i]) - 1):
+        jugadores[i][j].updatewealth(auxiliary[1][j])
 
-# update the wealth of each customer
-
-        playergains = auxiliary[1]
-        casinogain = auxiliary[0]
-        jugadores[i][j].updatewealth(playergains[j])
-        lostables[i].croupier.commission(casinogain)
+    loscroupiers[i].commission(auxiliary[0])
 
 
-# for i in range(nbcrapstables+nbroulettetables):
-#     print(Croupier(i+1).partofwin)
+for i in range(nbcrapstables+nbroulettetables):
+    print(loscroupiers[i].partofwin)
 
 
 
