@@ -70,14 +70,35 @@ class bachelorcustomer(customer):
         self.budget += update -self.bet
     def setbet(self):
         return False
+
+class Employee(object):
+    def __init__(self, wage=0):
+        self.wage = wage
+
+class Croupier(Employee):
+    def __init__(self, wage=0, partofwin=0):
+        super(Croupier, self).__init__(wage)
+        self.partofwin = partofwin
+    def commission(self, partofwin):
+        if partofwin > 0:
+            self.partofwin += int(partofwin) * 0.05
+
+class Barman(Employee):
+    def __init__(self, wage=0, alcsales =0):
+        super(Barman, self).__init__(wage)
+        self.alcsales += alcsales
+
+
 class table(object):
     def __init__(self, tableID, minimumbet=0):
         self.tableID = tableID
         self.minimumbet = minimumbet
+        self.croupier = Croupier(tableID)
 class Craps(table):
-    def __init__(self, tableID, minimumbet =0):
+    def __init__(self, tableID, croupier=0,  minimumbet =0):
         super(Craps, self).__init__(tableID)
         super(Craps,self).__init__(minimumbet)
+        super(Craps,self).__init__(croupier)
         self.minimumbet = random.choice([0, 25, 50])
     def SimulateGame(self, amounts):
         A = []
@@ -106,9 +127,10 @@ class Craps(table):
 
 class Roulette(table):
 
-    def __init__(self, tableID, minimumbet=0):
+    def __init__(self, croupier=0, tableID=0, minimumbet=0):
         super(Roulette,self).__init__(tableID)
         super(Roulette,self).__init__(minimumbet)
+        super(Roulette, self).__init__(croupier)
         self.minimumbet = random.choice([50, 100, 200])
 
     def SimulateGame(self, amounts):
@@ -131,22 +153,7 @@ class Roulette(table):
         CasinoGain = sum(amounts) - sum(PlayerGains)
         return [CasinoGain, PlayerGains]
 
-class Employee(object):
-    def __init__(self, wage=0):
-        self.wage = wage
 
-class Croupier(Employee):
-    def __init__(self, wage=0, partofwin=0):
-        super(Croupier, self).__init__(wage)
-        self.partofwin = partofwin
-    def commission(self, partofwin):
-        if partofwin > 0:
-            self.partofwin += partofwin
-
-class Barman(Employee):
-    def __init__(self, wage=0, alcsales =0):
-        super(Barman, self).__init__(wage)
-        self.alcsales = alcsales
 
 
 
@@ -202,5 +209,8 @@ for i in range(len(lostables)):
     playergains = auxiliary[1]
     casinogain = auxiliary[0]
     jugadores[i][j].updatewealth(playergains[j])
+
+
+
 
 
