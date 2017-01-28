@@ -159,3 +159,10 @@ for z in range(0, len(jugadores)):
 #     print(len(jugadores[i]))
 
 
+#Simulate one round
+for i in range(len(lostables)):
+    amounts = []
+    for j in range(len(jugadores[i])):
+        amounts.append(jugadores[i][j].bet)
+    lostables[i].SimulateGame(amounts)
+
