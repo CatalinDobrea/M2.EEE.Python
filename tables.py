@@ -26,16 +26,17 @@ class returningcustomer(customer):
         super(returningcustomer, self).__init__(budget)
         super(returningcustomer, self).__init__(bet)
         self.budget = random.randint(100, 300)
-    def setbet(self, table):
+    def setbet(self):
         if self.budget >= self.table.minimumbet:
-            self.bet = table.minimumbet
+            self.bet = self.table.minimumbet
         else:
             self.bet=0
     def sitdown(self, tablelist):
         self.table = random.choice(tablelist)
     def standup(self, table=0):
         self.table = table
-
+    def updatewealth(self,update):
+        self.budget += update -self.bet
 class onetimecustomer(customer):
 
     def __init__(self, custID, table=0, bet=0, budget=0):
@@ -49,7 +50,10 @@ class onetimecustomer(customer):
         self.table = random.choice(tablelist)
     def standup(self, table=0):
         self.table = table
-
+    def updatewealth(self,update):
+        self.budget += update -self.bet
+    def setbet(self):
+        return False
 class bachelorcustomer(customer):
     def __init__(self, custID, table=0, budget=0, bet=0):
         super(bachelorcustomer, self).__init__(custID)
@@ -62,7 +66,10 @@ class bachelorcustomer(customer):
         self.table = random.choice(tablelist)
     def standup(self, table=0):
         self.table = table
-
+    def updatewealth(self,update):
+        self.budget += update -self.bet
+    def setbet(self):
+        return False
 class table(object):
     def __init__(self, tableID, minimumbet=0):
         self.tableID = tableID
@@ -124,6 +131,7 @@ class Roulette(table):
         CasinoGain = sum(amounts) - sum(PlayerGains)
         return [CasinoGain, PlayerGains]
 
+
 #Create the customers
 loscostumers = []
 for i in range(int(sharereturningcustomers * nbcustomers)):
@@ -144,6 +152,9 @@ for i in range(nbcrapstables):
 for i in range(0, len(loscostumers)):
     loscostumers[i].sitdown(lostables)
 
+#Update the bets since now they are seated at tables
+for i in range(1,len(loscostumers)):
+    loscostumers[i].setbet
 
 #Create a list with lists of players for each table
 jugadores = [[] for item in lostables]
@@ -166,3 +177,5 @@ for i in range(len(lostables)):
         amounts.append(jugadores[i][j].bet)
     lostables[i].SimulateGame(amounts)
 
+
+#Update the wealth of the customer
