@@ -192,8 +192,6 @@ class Casino(object):
             for i in range(self.nbbarmen):
                 losbarmans.append(Barman(i,self.employeewage))
 
-            return lostables, loscroupiers, loscostumers, losbarmans
-
 
             def SimulateRound(self):
                 losdrinkers = []
