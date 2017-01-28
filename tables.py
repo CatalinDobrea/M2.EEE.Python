@@ -158,5 +158,4 @@ for z in range(0, len(jugadores)):
 # for i in range(len(jugadores)-1):
 #     print(len(jugadores[i]))
 
-#Simulate one round
 
