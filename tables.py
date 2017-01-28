@@ -86,9 +86,9 @@ class Croupier(Employee):
 class Barman(Employee):
     def __init__(self, wage=0, alcsales =0):
         super(Barman, self).__init__(wage)
-        self.alcsales += alcsales
-
-
+        self.alcsales = alcsales
+    def barmantips(self):
+        self.alcsales +=random.randint(0,20)
 class table(object):
     def __init__(self, tableID, minimumbet=0):
         self.tableID = tableID
