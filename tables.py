@@ -1,4 +1,5 @@
 import random
+random.seed(1)
 
 nbroulettetables = 10
 nbcrapstables =10
@@ -10,6 +11,14 @@ sharereturningcustomers = 0.5
 sharebachelorcustomers = 0.1
 freestartbudget = 200
 
+class Casino(object):
+    def __init__(self, cash = startingcash):
+        self.cash = cash
+    def getCash(self,income):
+        if income > 0:
+            self.cash += float(income)*0.95
+    def DrinkCash(self,cash):
+        self.cash += cash
 
 class customer(object):
     def __init__(self, custID, table=0, bet =0, budget=0):
@@ -17,8 +26,14 @@ class customer(object):
         self.table = table
         self.bet = bet
         self.budget = budget
-
-
+    def getDrink(self):
+        drinkcost = random.randint(1,2) * 20
+        self.budget -= drinkcost
+        return drinkcost
+    def giveTip(self):
+        tip = random.randint(0,20)
+        self.budget -= tip
+        return tip
 class returningcustomer(customer):
     def __init__(self, custID, bet=0, table=0, budget=0):
         super(returningcustomer, self).__init__(custID)
@@ -55,7 +70,7 @@ class onetimecustomer(customer):
     def setbet(self):
         return False
 class bachelorcustomer(customer):
-    def __init__(self, custID, table=0, budget=0, bet=0):
+    def __init__(self, freestartbudget, custID, table=0, budget=0, bet=0, ):
         super(bachelorcustomer, self).__init__(custID)
         super(bachelorcustomer, self).__init__(table)
         super(bachelorcustomer, self).__init__(budget)
@@ -85,21 +100,25 @@ class Croupier(Employee):
             self.partofwin += float(partofwin) * 0.05
 
 class Barman(Employee):
-    def __init__(self, wage=0, alcsales =0):
+    def __init__(self, wage=0, tips =0, alcsales=0):
         super(Barman, self).__init__(wage)
+        self.tips = tips
         self.alcsales = alcsales
-    def barmantips(self):
-        self.alcsales +=random.randint(0,20)
+    def barmanTips(self, tip):
+        self.tips += tip
+    def barmanSales(self,sales):
+        self.alcsales += sales
 
 class table(object):
     def __init__(self, tableID, minimumbet=0):
         self.tableID = tableID
         self.minimumbet = minimumbet
-
+        self.croupier = Croupier(float(tableID))
 class Craps(table):
-    def __init__(self, tableID, minimumbet =0):
+    def __init__(self, tableID, croupier=0,  minimumbet =0):
         super(Craps, self).__init__(tableID)
         super(Craps,self).__init__(minimumbet)
+        super(Craps,self).__init__(croupier)
         self.minimumbet = random.choice([0, 25, 50])
     def SimulateGame(self, amounts):
         A = []
@@ -110,6 +129,13 @@ class Craps(table):
         rightbet = []
         for item in bets:
             rightbet.append(bool(item == dice))
+        # print(" Throwing the dice")
+        # print(" The sum of the upper faces  ", dice)
+        # if sum(rightbet) > 0:
+        #     print(" There are ", sum(rightbet), " winner(s)")
+        # else:
+        #     print("No player won")
+
 
         Probs = list([i / 36 for i in range(1, 6)]) + [6 / 36] + list(reversed([i / 36 for i in range(1, 6)]))
         Coeff = [0.9 / i for i in Probs]
@@ -121,10 +147,12 @@ class Craps(table):
 
 class Roulette(table):
 
-    def __init__(self, tableID=0, minimumbet=0):
+    def __init__(self, croupier=0, tableID=0, minimumbet=0):
         super(Roulette,self).__init__(tableID)
         super(Roulette,self).__init__(minimumbet)
+        super(Roulette, self).__init__(croupier)
         self.minimumbet = random.choice([50, 100, 200])
+
     def SimulateGame(self, amounts):
         A=[]
         bets = [random.randint(0,36) for i in amounts]
@@ -134,24 +162,30 @@ class Roulette(table):
         rightnumber= []
         for item in bets:
             rightnumber.append(bool(item == winnumb))
+        # print(" Spinning the wheel...")
+        # print(" Ball lands on " + str(winnumb))
+        # if sum(rightnumber) > 0:
+        #     print(" There are " + str(sum(rightnumber)) + " correct bet(s)")
+        # else:
+        #     print("No winners this round")
 
         PlayerGains = [i * j * k * 30 for i, j, k in zip(amounts, A, rightnumber)]
         CasinoGain = sum(amounts) - sum(PlayerGains)
         return [CasinoGain, PlayerGains]
 
 
+# Create Casino
 
-
+Badiga = Casino()
 
 #Create the customers
 loscostumers = []
 for i in range(int(sharereturningcustomers * nbcustomers)):
     loscostumers.append(returningcustomer(i+1))
-for i in range(int(sharereturningcustomers * nbcustomers +1), int(sharereturningcustomers * nbcustomers + sharebachelorcustomers * nbcustomers)):
-    loscostumers.append((bachelorcustomer(i+1)))
-for i in range(int(sharereturningcustomers * nbcustomers + sharebachelorcustomers * nbcustomers +1), int(nbcustomers)):
+for i in range(int(sharereturningcustomers * nbcustomers ), int(sharereturningcustomers * nbcustomers + sharebachelorcustomers * nbcustomers)):
+    loscostumers.append((bachelorcustomer(i+1, freestartbudget)))
+for i in range(int(sharereturningcustomers * nbcustomers + sharebachelorcustomers * nbcustomers), int(nbcustomers)):
     loscostumers.append((onetimecustomer(i+1)))
-
 
 
 #Create the tables
@@ -161,51 +195,75 @@ for i in range(nbroulettetables):
 for i in range(nbcrapstables):
     lostables.append(Craps(i+nbroulettetables+1))
 
+# Create the Croupiers
 loscroupiers = []
-for i in  range(nbroulettetables+nbcrapstables):
-    loscroupiers.append(Croupier(i+1))
+for i in range(nbroulettetables+nbcrapstables):
+    loscroupiers.append(Croupier(i))
+
+#Create de Barmans
+losbarmans=[]
+for i in range(nbbarmen):
+    losbarmans.append(Barman(i))
+
+
 
 
 
 ####### Here should the function for one round start
+
+#Creating the people who will drink
+losdrinkers = []
+for i in range(len(loscostumers)):
+    if loscostumers[i].budget > 60:
+        losdrinkers.append(loscostumers[i])
+losdrinkers = random.sample(losdrinkers,len(losbarmans))
+
+# Update the budgets and the gains
+for i in range(len(losdrinkers)):
+    losbarmans[i].barmanTips(losdrinkers[i].giveTip())
+    losbarmans[i].barmanSales(losdrinkers[i].getDrink())
+    Badiga.DrinkCash(losdrinkers[i].getDrink())
+
 #Sitdown players for a round
-for i in range(len(loscostumers)-1):
+for i in range(len(loscostumers)):
     loscostumers[i].sitdown(lostables)
 
 #Update the bets since now they are seated at tables
-for i in range(len(loscostumers)-1):
-    loscostumers[i].setbet
+for i in range(len(loscostumers)):
+    loscostumers[i].setbet()
+
+
 
 #Create a list with lists of players for each table
 jugadores = [[] for item in lostables]
-for z in range(len(jugadores)-1):
-    for item in range(len(loscostumers)-1):
+for z in range(len(jugadores)):
+    for item in range(len(loscostumers)):
         if loscostumers[item].table == lostables[z]:
             jugadores[z].append(loscostumers[item])
 
 
-## Check that the functions are working and tables are getting players
-# print(jugadores)
-# for i in range(len(jugadores)-1):
-#     print(len(jugadores[i]))
-
-
 # Simulate one round
-for i in range(len(lostables)-1):
+for i in range(len(lostables)):
     amounts = []
-    for j in range(len(jugadores[i])-1):
+    for j in range(len(jugadores[i])):
         amounts.append(jugadores[i][j].bet)
     auxiliary=lostables[i].SimulateGame(amounts)
-    for j in range(len(jugadores[i]) - 1):
+    for j in range(len(jugadores[i])):
         jugadores[i][j].updatewealth(auxiliary[1][j])
-
     loscroupiers[i].commission(auxiliary[0])
+    Badiga.getCash(auxiliary[0])
 
+# Drinking one more time
+losdrinkers = []
+for i in range(len(loscostumers)):
+    if loscostumers[i].budget > 60:
+        losdrinkers.append(loscostumers[i])
+losdrinkers = random.sample(losdrinkers,len(losbarmans))
 
-for i in range(nbcrapstables+nbroulettetables):
-    print(loscroupiers[i].partofwin)
+# Update the budgets and the gains
+for i in range(len(losdrinkers)):
+    losbarmans[i].barmanTips(losdrinkers[i].giveTip())
+    losbarmans[i].barmanSales(losdrinkers[i].getDrink())
+    Badiga.DrinkCash(losdrinkers[i].getDrink())
 
-
-
-
-
+print(Badiga.cash)
