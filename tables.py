@@ -140,6 +140,23 @@ for i in range(nbroulettetables):
 for i in range(nbcrapstables):
     lostables.append(Craps(i+nbroulettetables+1))
 
+#Sitdown players for a round
+for i in range(0, len(loscostumers)):
+    loscostumers[i].sitdown(lostables)
 
 
+#Create a list with lists of players for each table
+jugadores = [[] for item in lostables]
+for z in range(0, len(jugadores)):
+    for item in range(0, len(loscostumers)):
+        if loscostumers[item].table == lostables[z]:
+            jugadores[z].append(loscostumers[item])
+
+
+##Check that the functions are working and tables are getting players
+#print(jugadores)
+# for i in range(len(jugadores)-1):
+#     print(len(jugadores[i]))
+
+#Simulate one round
 
