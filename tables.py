@@ -131,6 +131,24 @@ class Roulette(table):
         CasinoGain = sum(amounts) - sum(PlayerGains)
         return [CasinoGain, PlayerGains]
 
+class Employee(object):
+    def __init__(self, wage=0):
+        self.wage = wage
+
+class Croupier(Employee):
+    def __init__(self, wage=0, partofwin=0):
+        super(Croupier, self).__init__(wage)
+        self.partofwin = partofwin
+    def commission(self, partofwin):
+        if partofwin > 0:
+            self.partofwin += partofwin
+
+class Barman(Employee):
+    def __init__(self, wage=0, alcsales =0):
+        super(Barman, self).__init__(wage)
+        self.alcsales = alcsales
+
+
 
 #Create the customers
 loscostumers = []
@@ -148,6 +166,8 @@ for i in range(nbroulettetables):
 for i in range(nbcrapstables):
     lostables.append(Craps(i+nbroulettetables+1))
 
+
+####### Here should the function for one round start
 #Sitdown players for a round
 for i in range(0, len(loscostumers)):
     loscostumers[i].sitdown(lostables)
