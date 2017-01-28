@@ -178,17 +178,17 @@ for i in range(nbcrapstables):
 
 ####### Here should the function for one round start
 #Sitdown players for a round
-for i in range(0, len(loscostumers)):
+for i in range(len(loscostumers)-1):
     loscostumers[i].sitdown(lostables)
 
 #Update the bets since now they are seated at tables
-for i in range(1,len(loscostumers)):
+for i in range(len(loscostumers)-1):
     loscostumers[i].setbet
 
 #Create a list with lists of players for each table
 jugadores = [[] for item in lostables]
-for z in range(0, len(jugadores)):
-    for item in range(0, len(loscostumers)):
+for z in range(len(jugadores)-1):
+    for item in range(len(loscostumers)-1):
         if loscostumers[item].table == lostables[z]:
             jugadores[z].append(loscostumers[item])
 
@@ -200,18 +200,22 @@ for z in range(0, len(jugadores)):
 
 
 # Simulate one round
-for i in range(len(lostables)):
+for i in range(len(lostables)-1):
     amounts = []
-    for j in range(len(jugadores[i])):
+    for j in range(len(jugadores[i])-1):
         amounts.append(jugadores[i][j].bet)
-    auxiliary=lostables[i].SimulateGame(amounts)
+        auxiliary=lostables[i].SimulateGame(amounts)
 
 # update the wealth of each customer
 
-    playergains = auxiliary[1]
-    casinogain = auxiliary[0]
-    if jugadores[i][j] != []:
+        playergains = auxiliary[1]
+        casinogain = auxiliary[0]
         jugadores[i][j].updatewealth(playergains[j])
+        lostables[i].croupier.commission(casinogain)
+
+
+# for i in range(nbcrapstables+nbroulettetables):
+#     print(Croupier(i+1).partofwin)
 
 
 
