@@ -164,18 +164,23 @@ for z in range(0, len(jugadores)):
             jugadores[z].append(loscostumers[item])
 
 
-##Check that the functions are working and tables are getting players
-#print(jugadores)
+## Check that the functions are working and tables are getting players
+# print(jugadores)
 # for i in range(len(jugadores)-1):
 #     print(len(jugadores[i]))
 
 
-#Simulate one round
+# Simulate one round
 for i in range(len(lostables)):
     amounts = []
     for j in range(len(jugadores[i])):
         amounts.append(jugadores[i][j].bet)
-    lostables[i].SimulateGame(amounts)
+    auxiliary=lostables[i].SimulateGame(amounts)
+
+# update the wealth of each customer
+
+    playergains = auxiliary[1]
+    casinogain = auxiliary[0]
+    jugadores[i][j].updatewealth(playergains[j])
 
 
-#Update the wealth of the customer
