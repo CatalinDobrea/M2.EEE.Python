@@ -12,46 +12,70 @@ freestartbudget = 200
 
 
 class customer(object):
-    def __init__(self, custID):
+    def __init__(self, custID, table=0, bet =0, budget=0):
         self.custID = custID
-    def sitdown(self, tablelist):
-        return random.choice(tablelist)
-
-class returningcustomer(object):
-    def __init__(self, custID, bet=0):
-        self.custID = custID
-        self.budget = random.randint(100, 300)
+        self.table = table
         self.bet = bet
+        self.budget = budget
+
+
+class returningcustomer(customer):
+    def __init__(self, custID, bet=0, table=0, budget=0):
+        super(returningcustomer, self).__init__(custID)
+        super(returningcustomer, self).__init__(table)
+        super(returningcustomer, self).__init__(budget)
+        super(returningcustomer, self).__init__(bet)
+        self.budget = random.randint(100, 300)
     def setbet(self, table):
-        if self.budget >= table.minimumbet:
+        if self.budget >= self.table.minimumbet:
             self.bet = table.minimumbet
         else:
             self.bet=0
+    def sitdown(self, tablelist):
+        self.table = random.choice(tablelist)
+    def standup(self, table=0):
+        self.table = table
 
-class onetimecustomer(object):
-    def __init__(self, custID):
-        self.custID = custID
+class onetimecustomer(customer):
+
+    def __init__(self, custID, table=0, bet=0, budget=0):
+        super(onetimecustomer, self).__init__(custID)
+        super(onetimecustomer, self).__init__(table)
+        super(onetimecustomer, self).__init__(budget)
+        super(onetimecustomer, self).__init__(bet)
         self.budget = random.randint(200, 300)
         self.bet = random.randint(0, self.budget)
+    def sitdown(self, tablelist):
+        self.table = random.choice(tablelist)
+    def standup(self, table=0):
+        self.table = table
 
-class bachelorcustomer(object):
-    def __init__(self, custID):
-        self.custID = custID
-        self.budget = random.randint(200, 500)
+class bachelorcustomer(customer):
+    def __init__(self, custID, table=0, budget=0, bet=0):
+        super(bachelorcustomer, self).__init__(custID)
+        super(bachelorcustomer, self).__init__(table)
+        super(bachelorcustomer, self).__init__(budget)
+        super(bachelorcustomer, self).__init__(bet)
+        self.budget = random.randint(200, 500) + freestartbudget
         self.bet = random.randint(0, self.budget // 3)
-    def additionalcash(self, cash):
-        self.budget += cash
+    def sitdown(self, tablelist):
+        self.table = random.choice(tablelist)
+    def standup(self, table=0):
+        self.table = table
 
 class table(object):
-    def __init__(self, tableID):
+    def __init__(self, tableID, minimumbet=0):
         self.tableID = tableID
-
+        self.minimumbet = minimumbet
 class Craps(table):
-    def SimulateGame(amounts):
+    def __init__(self, tableID, minimumbet =0):
+        super(Craps, self).__init__(tableID)
+        super(Craps,self).__init__(minimumbet)
+        self.minimumbet = random.choice([0, 25, 50])
+    def SimulateGame(self, amounts):
         A = []
-        minimum = random.choice([0, 25, 50])
         for item in amounts:
-            A.append(bool(item >=minimum))
+            A.append(bool(item >=self.minimumbet))
         bets = [random.randint(2, 12) for i in amounts]
         dice = random.randint(1, 6) + random.randint(1, 6)
         rightbet = []
@@ -75,12 +99,16 @@ class Craps(table):
 
 class Roulette(table):
 
-    def SimulateGame(amounts):
-        minimum = random.choice([50, 100, 200])
+    def __init__(self, tableID, minimumbet=0):
+        super(Roulette,self).__init__(tableID)
+        super(Roulette,self).__init__(minimumbet)
+        self.minimumbet = random.choice([50, 100, 200])
+
+    def SimulateGame(self, amounts):
         A=[]
         bets = [random.randint(0,36) for i in amounts]
         for item in amounts:
-            A.append(bool(item >= minimum))
+            A.append(bool(item >= self.minimumbet))
         winnumb = random.randint(0, 36)
         rightnumber= []
         for item in bets:
@@ -111,4 +139,7 @@ for i in range(nbroulettetables):
     lostables.append(Roulette(i+1))
 for i in range(nbcrapstables):
     lostables.append(Craps(i+nbroulettetables+1))
+
+
+
 
