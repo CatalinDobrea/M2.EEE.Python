@@ -6,7 +6,6 @@ import random
 probas = [0.0278, 0.0556, 0.0833, 0.1111, 0.1389, 0.1667, 0.1389, 0.1111, 0.0833, 0.0556, 0.0278]
 Coeff = [0.9 / j for j in probas]
 
-
 class Craps:
     def __init__(self, min):
         self.min = min

@@ -78,7 +78,7 @@ class BachelorCustomer(Customer):
         self.budget += update
 
     def setbet(self):
-        if self.budget< self.bet:
+        if self.budget<self.bet:
             self.bet = 0
         else:
             self.budget -= self.bet
@@ -110,7 +110,7 @@ class Barman(Employee):
         self.tips += tip
 
     def barmanSales(self,sales):
-        self.alcsales += sales
+        self.alcsales = sales
 
 
 
@@ -223,12 +223,12 @@ class Casino(object):
             #Create de Barmans
             losbarmans=[]
             for i in range(self.nbbarmen):
-                losbarmans.append(Barman(i,self.employeewage))
+                losbarmans.append(Barman(self.employeewage))
 
-            # We don't forget to pay our employees
-            self.cash -= self.employeewage * (self.nbbarmen + self.nbcrapstables + self.nbroulettetables)
-            # And the free starting budget for bachelor costumers
+            #We add the free starting budget for bachelor costumers
             self.cash -= self.freestartbudget * (self.sharebachelorcustomers*self.nbcustomers)
+
+
             for i in range(3):
 
                 losdrinkers = []
@@ -236,12 +236,11 @@ class Casino(object):
                     if loscostumers[i].budget > 60:
                         losdrinkers.append(loscostumers[i])
                 losdrinkers = random.sample(losdrinkers, len(losbarmans))
-
                     # Update the budgets and the gains
                 for i in range(len(losdrinkers)):
                     losbarmans[i].barmanTips(losdrinkers[i].giveTip())
                     losbarmans[i].barmanSales(losdrinkers[i].getDrink())
-                    self.DrinkCash(losdrinkers[i].getDrink())
+                    self.DrinkCash(losbarmans[i].alcsales)
 
                     # Sitdown players for a round
                 for i in range(len(loscostumers)):
@@ -280,54 +279,29 @@ class Casino(object):
                 for i in range(len(losdrinkers)):
                     losbarmans[i].barmanTips(losdrinkers[i].giveTip())
                     losbarmans[i].barmanSales(losdrinkers[i].getDrink())
-                    self.DrinkCash(losdrinkers[i].getDrink())
-                x = sum([float(loscostumers[i].budget) for i in range(len(loscostumers))])
-                y = sum([float(loscroupiers[i].partofwin) for i in range(len(loscroupiers))])
-                z = sum([float(losbarmans[i].tips) for i in range(len(losbarmans))])
-                # q = sum([int(losbarmans[i].alcsales) for i in range(len(losbarmans))])
-                w = self.cash
-                print (x,y,z,w)
-                print(x + y + z + w)
+                    self.DrinkCash(losbarmans[i].alcsales)
+
+            # We don't forget to pay our employees at the end of the day
+            self.cash -= self.employeewage * (self.nbbarmen + self.nbcrapstables + self.nbroulettetables)
 
 
-            # #Function that show how the players have betted, to make shure they don't bet more than they have
-            # for i in range(len(loscostumers)):
-            #     print(loscostumers[i].table.minimumbet, loscostumers[i].budget, loscostumers[i].bet)
-            #
-
-            # Mean of tips, alcsales and croupier profits
-            # crp= []
-            # for i in range(len(loscroupiers)):
-            #     crp.append(loscroupiers[i].partofwin)
-            # print(numpy.mean(crp))
-            #
-            # tps = []
-            # for i in range(len(losbarmans)):
-            #     tps.append(losbarmans[i].tips)
-            # print(numpy.mean(tps))
-            #
-            # alc = []
-            # for i in range(len(losbarmans)):
-            #     alc.append(losbarmans[i].alcsales)
-            # print(numpy.mean(alc))
+JoyCasino = Casino(10,10, 4, 200, 50000, 100, 0.5, 0.1, 200)
 
 
+# Plotting the cummulated gain evolution for 1000 evenings
+import matplotlib.pyplot as plt; plt.rcdefaults()
+import matplotlib.pyplot as plt
 
-JoyCasino = Casino(10, 10, 4, 200, 50000, 100, 0.5, 0.1, 200)
-JoyCasino.SimulateEvening()
+output=[]
+for i in range(1000):
+    JoyCasino.SimulateEvening()
+    output.append(JoyCasino.cash)
+plt.bar(range(1,1001),output)
+plt.show()
 
-
-# # Oleaca de sodomie
-# output=[]
-# for i in range(1000):
-#     JoyCasino.SimulateEvening()
-#     output.append(JoyCasino.cash - 50000)
-# otp = []
-# for i in range(len(output)-1):
-#     otp.append(output[i+1]-output[i])
-# print(numpy.mean(otp))
-#
-# import matplotlib.pyplot as plt; plt.rcdefaults()
-# import matplotlib.pyplot as plt
-# plt.bar(range(1,1000), otp, align='center', alpha=0.5)
-# plt.show()
+#Plotting the gain evolution in for every evening of the 1000
+otp = []
+for i in range(len(output)-1):
+    otp.append(output[i+1]-output[i])
+plt.bar(range(1,1000),otp)
+plt.show()
